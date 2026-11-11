@@ -10,9 +10,15 @@ import (
 	"time"
 
 	"github.com/srikanta0427/listing_app/internal/config"
+	"github.com/srikanta0427/listing_app/internal/db"
 )
 
 func main() {
+	cfg := config.MustLoadConfig()
+	_ , err := db.Connect(cfg.DatabaseURL)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +28,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:         ":"+config.MustLoadConfig().Port,
+		Addr:         ":"+cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,

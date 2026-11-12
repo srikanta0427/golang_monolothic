@@ -11,24 +11,22 @@ import (
 
 	"github.com/srikanta0427/listing_app/internal/config"
 	"github.com/srikanta0427/listing_app/internal/db"
+	"github.com/srikanta0427/listing_app/internal/handler"
 )
 
 func main() {
 	cfg := config.MustLoadConfig()
-	_ , err := db.Connect(cfg.DatabaseURL)
+	db, err := db.Connect(cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte(`{"status":"ok"}`))
-	})
+
+	mux.HandleFunc("GET /listings", handler.Listing(db))
 
 	server := &http.Server{
-		Addr:         ":"+cfg.Port,
+		Addr:         ":" + cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,

@@ -23,7 +23,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /listings", handler.Listing(db))
+	mux.HandleFunc("GET /listings", handler.List(db))
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,

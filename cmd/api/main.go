@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Start")
 	cfg := config.MustLoadConfig()
 	db, err := db.Connect(cfg.DatabaseURL)
 	if err != nil {
@@ -23,7 +24,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /listings", handler.List(db))
+	lh := handler.NewListingHandler(db)
+
+	mux.HandleFunc("GET /listings", lh.List)
+	mux.HandleFunc("DELETE /listings/{id}",lh.DeleteList)
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
@@ -33,8 +37,9 @@ func main() {
 		IdleTimeout:  time.Second * 30,
 	}
 
+	fmt.Println("Server is running on port", os.Getenv("PORT"))
 	if server.ListenAndServe() != nil {
 		log.Fatalf("Server Failed To Build")
 	}
-	fmt.Println("Server is running on port", os.Getenv("PORT"))
+	
 }

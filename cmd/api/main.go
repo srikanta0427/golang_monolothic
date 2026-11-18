@@ -28,6 +28,7 @@ func main() {
 
 	mux.HandleFunc("GET /listings", lh.List)
 	mux.HandleFunc("DELETE /listings/{id}",lh.DeleteList)
+	// c
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
